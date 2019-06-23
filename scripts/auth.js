@@ -2,23 +2,52 @@
 const signupForm = document.querySelector('#signup-form');
 const logout = document.querySelector('#logout');
 const loginForm = document.querySelector('#login-form');
+const createForm = document.querySelector('#create-form');
 
 // connect to database
-db.collection('climbs')
-  .get()
-  .then(snapshot => {
-    console.log(snapshot.docs);
-    setUpClimbs(snapshot.docs);
-  });
 
 auth.onAuthStateChanged(user => {
   if (user) {
     console.log(`logged in user: ${JSON.stringify(user)}`);
+    // if there is a user, get the climbs
+    setupUI(user);
+    db.collection('climbs')
+      .get()
+      .then(snapshot => {
+        console.log(snapshot.docs);
+        setUpClimbs(snapshot.docs);
+      });
   } else {
-    console.log('no user');
+    setUpClimbs([]);
+    setupUI(user);
   }
 });
 
+// create form
+createForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const routeName = createForm.routeName.value;
+  const grade = createForm.grade.value;
+  console.log(grade + routeName);
+  db.collection('climbs')
+    .add({
+      routeName,
+      grade,
+    })
+    .then(res => {
+      console.log(res);
+      const modal = $('#modal-create');
+      modal.modal('hide');
+      createForm.reset();
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+      console.log(`${errorCode}  ${errorMessage}`);
+    });
+});
 // SIGN UP NEW USER
 signupForm.addEventListener('submit', e => {
   e.preventDefault();
@@ -43,9 +72,9 @@ signupForm.addEventListener('submit', e => {
 // LOG OUT
 logout.addEventListener('click', e => {
   e.preventDefault();
+  console.log(`signed out`);
   auth.signOut().then(res => {
     // console.log(res);
-    console.log(`signed out`);
   });
 });
 // Login
@@ -66,6 +95,6 @@ loginForm.addEventListener('submit', e => {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-      console.log(`${errCode}  ${errorMessage}`);
+      console.log(`${errorCode}  ${errorMessage}`);
     });
 });

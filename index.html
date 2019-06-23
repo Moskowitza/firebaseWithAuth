@@ -36,7 +36,9 @@
 
   <body>
     <!-- Nav Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light  justify-content-between"
+    >
       <a class="navbar-brand" href="#"
         ><img src="img/logo1.svg" style="width:50px; margin-top:5px;"
       /></a>
@@ -51,7 +53,7 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item active">
             <a class="nav-link" href="#"
@@ -59,7 +61,7 @@
             >
           </li>
 
-          <li class="nav-item logged-in">
+          <li class="nav-item logged-in" style="display:none;">
             <a
               href="#"
               class="nav-link modal-trigger"
@@ -68,7 +70,17 @@
               >Account</a
             >
           </li>
-          <li class="nav-item logged-in">
+          <li class="nav-item logged-in" style="display:none;">
+            <a
+              href="#"
+              id="createClimb"
+              class="nav-link modal-trigger"
+              data-target="#modal-create"
+              data-toggle="modal"
+              >Create Climb</a
+            >
+          </li>
+          <li class="nav-item logged-in" style="display:none;">
             <a
               href="#"
               id="logout"
@@ -78,30 +90,20 @@
               >Logout</a
             >
           </li>
-          <li class="nav-item logged-in">
+          <li class="nav-item logged-out" style="display:none;">
             <a
               href="#"
-              id="logout"
-              class="nav-link modal-trigger"
-              data-target="#modal-create"
-              data-toggle="modal"
-              >Create Climb</a
-            >
-          </li>
-          <li class="nav-item logged-out">
-            <a
-              href="#"
-              id="logout"
+              id="login"
               class="nav-link modal-trigger"
               data-target="#modal-login"
               data-toggle="modal"
               >Login</a
             >
           </li>
-          <li class="nav-item logged-out">
+          <li class="nav-item logged-out" style="display:none;">
             <a
               href="#"
-              id="logout"
+              id="sign-up"
               class="nav-link modal-trigger"
               data-target="#modal-signup"
               data-toggle="modal"
@@ -188,7 +190,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Sign up</h5>
+            <h5 class="modal-title" id="exampleModalLabel">LogIn</h5>
             <button
               type="button"
               class="close"
@@ -202,7 +204,7 @@
             <form id="login-form">
               <div class="form-group">
                 <label for="login-email" class="col-form-label"
-                  >Singup Email:</label
+                  >Login Email:</label
                 >
                 <input
                   type="email"
@@ -317,17 +319,17 @@
                 <label for="grade" class="col-form-label">Grade:</label>
                 <input type="text" class="form-control" id="grade" required />
               </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">Create</button>
+              </div>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="button" class="btn btn-primary">Create</button>
           </div>
         </div>
       </div>
