@@ -4,7 +4,24 @@ const logout = document.querySelector('#logout');
 const loginForm = document.querySelector('#login-form');
 const createForm = document.querySelector('#create-form');
 const adminForm = document.querySelector('.admin-actions');
+const resetForm = document.querySelector('#reset-request-form');
 
+resetForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const emailAddress = resetForm['reset-request-email'].value;
+  console.log(emailAddress);
+  auth
+    .sendPasswordResetEmail(emailAddress)
+    .then(function() {
+      const modal = $('#modal-reset-request');
+      modal.modal('hide');
+      resetForm.reset();
+    })
+    .catch(function(error) {
+      const errorMessage = error.message;
+      resetForm.querySelector('.error').innerHTML = errorMessage;
+    });
+});
 // Make and admin
 adminForm.addEventListener('submit', e => {
   e.preventDefault();
@@ -84,7 +101,6 @@ signupForm.addEventListener('submit', e => {
       modal.modal('hide');
       signupForm.reset();
       signupForm.querySelector('.error').innerHTML = '';
-
     })
     .catch(function(error) {
       // Handle Errors here.
