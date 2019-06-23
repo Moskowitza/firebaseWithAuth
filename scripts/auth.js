@@ -3,7 +3,16 @@ const signupForm = document.querySelector('#signup-form');
 const logout = document.querySelector('#logout');
 const loginForm = document.querySelector('#login-form');
 const createForm = document.querySelector('#create-form');
+const adminForm = document.querySelector('.admin-actions');
 
+// Make and admin
+adminForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const adminEmail = document.querySelector('#admin-email').value;
+  console.log(adminEmail);
+  const addAdminRole = functions.httpsCallable('addAdminRole');
+  addAdminRole({ email: adminEmail }).then(res => console.log(res));
+});
 // connect to database
 
 auth.onAuthStateChanged(user => {
