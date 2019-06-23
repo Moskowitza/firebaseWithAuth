@@ -17,14 +17,17 @@ adminForm.addEventListener('submit', e => {
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    console.log(`logged in user: ${JSON.stringify(user)}`);
+    // console.log(`logged in user: ${JSON.stringify(user)}`);
     // if there is a user, get the climbs
+    user.getIdTokenResult().then(idTokenResult => {
+      // if this is true, set a new property to the user
+      user.admin = idTokenResult.claims.admin;
+      setupUI(user);
+    });
 
     db.collection('climbs').onSnapshot(
       snapshot => {
-        console.log(snapshot.docs);
         setUpClimbs(snapshot.docs);
-        setupUI(user);
       },
       err => console.log(err.message)
     );
@@ -80,12 +83,15 @@ signupForm.addEventListener('submit', e => {
       const modal = $('#modal-signup');
       modal.modal('hide');
       signupForm.reset();
+      signupForm.querySelector('.error').innerHTML = '';
+
     })
     .catch(function(error) {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
+      signupForm.querySelector('.error').innerHTML = errorMessage;
       console.log(`${errorCode}  ${errorMessage}`);
     });
 });
@@ -109,12 +115,15 @@ loginForm.addEventListener('submit', e => {
       const modal = $('#modal-login');
       modal.modal('hide');
       loginForm.reset();
+      loginForm.querySelector('.error').innerHTML = '';
     })
     .catch(function(error) {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-      console.log(`${errorCode}  ${errorMessage}`);
+      loginForm.querySelector('.error').innerHTML = errorMessage;
+
+      console.error(`${errorCode}  ${errorMessage}`);
     });
 });

@@ -2,22 +2,27 @@ const climbAccordion = document.querySelector('#accordion');
 const loggedOutLinks = document.querySelectorAll('.logged-out');
 const loggedInLinks = document.querySelectorAll('.logged-in');
 const accountModalDeets = document.querySelector('.account-details');
+const adminItems = document.querySelectorAll('.admin');
 const setupUI = user => {
   if (user) {
+    if (user.admin) {
+      adminItems.forEach(item => (item.style.display = 'block'));
+    }
     db.collection('users')
       .doc(user.uid)
       .get()
       .then(res => {
         const html = `
-        <div> Logged in as ${user.email}</div>
-        <div>About Me: ${res.data().bio}</div>`;
+            <div>Logged in as ${user.email}</div>
+            <div>About Me: ${res.data().bio}</div>
+            <div style="color:pink;">${user.admin ? 'Admin' : ''}</div>`;
         accountModalDeets.innerHTML = html;
       });
-
     loggedInLinks.forEach(link => (link.style.display = 'block'));
     loggedOutLinks.forEach(link => (link.style.display = 'none'));
   } else {
     accountModalDeets.innerHTML = '';
+    adminItems.forEach(item => (item.style.display = 'none'));
     loggedInLinks.forEach(link => (link.style.display = 'none'));
     loggedOutLinks.forEach(link => (link.style.display = 'block'));
   }

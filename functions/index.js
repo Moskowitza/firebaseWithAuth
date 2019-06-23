@@ -4,7 +4,12 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 // data is what we send to function
 // context is information about the user currently signed in
-exports.addAdminRole = functions.https.onCall((data, context) =>
+exports.addAdminRole = functions.https.onCall((data, context) => {
+  // make sure only admins can add admins
+  if (context.auth.token.admin !== true) {
+    return { error: "only admin's can create admins" };
+  }
+
   // get user and add custom claim ..admin
   admin
     .auth()
@@ -16,5 +21,5 @@ exports.addAdminRole = functions.https.onCall((data, context) =>
       })
     )
     .then(() => ({ message: `Success ${data.email} is an admin` }))
-    .catch(err => err)
-);
+    .catch(err => err);
+});
