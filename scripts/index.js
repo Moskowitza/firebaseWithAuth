@@ -1,12 +1,23 @@
 const climbAccordion = document.querySelector('#accordion');
 const loggedOutLinks = document.querySelectorAll('.logged-out');
 const loggedInLinks = document.querySelectorAll('.logged-in');
-
+const accountModalDeets = document.querySelector('.account-details');
 const setupUI = user => {
   if (user) {
+    db.collection('users')
+      .doc(user.uid)
+      .get()
+      .then(res => {
+        const html = `
+        <div> Logged in as ${user.email}</div>
+        <div>About Me: ${res.data().bio}</div>`;
+        accountModalDeets.innerHTML = html;
+      });
+
     loggedInLinks.forEach(link => (link.style.display = 'block'));
     loggedOutLinks.forEach(link => (link.style.display = 'none'));
   } else {
+    accountModalDeets.innerHTML = '';
     loggedInLinks.forEach(link => (link.style.display = 'none'));
     loggedOutLinks.forEach(link => (link.style.display = 'block'));
   }

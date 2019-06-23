@@ -11,11 +11,14 @@ auth.onAuthStateChanged(user => {
     console.log(`logged in user: ${JSON.stringify(user)}`);
     // if there is a user, get the climbs
 
-    db.collection('climbs').onSnapshot(snapshot => {
-      console.log(snapshot.docs);
-      setUpClimbs(snapshot.docs);
-      setupUI(user);
-    });
+    db.collection('climbs').onSnapshot(
+      snapshot => {
+        console.log(snapshot.docs);
+        setUpClimbs(snapshot.docs);
+        setupUI(user);
+      },
+      err => console.log(err.message)
+    );
   } else {
     setUpClimbs([]);
     setupUI(user);
@@ -52,10 +55,19 @@ signupForm.addEventListener('submit', e => {
   e.preventDefault();
   const email = signupForm['signup-email'].value;
   const password = signupForm['signup-password'].value;
+  const bio = signupForm['user-bio'].value;
+  console.log(bio);
+  //  Create the user
   auth
     .createUserWithEmailAndPassword(email, password)
     .then(res => {
-      // console.log(res);
+      //  Save the bio
+      db.collection('users')
+        .doc(res.user.uid)
+        .set({ bio });
+    })
+    .then(() => {
+      // handle the DOM
       const modal = $('#modal-signup');
       modal.modal('hide');
       signupForm.reset();
