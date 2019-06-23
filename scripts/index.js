@@ -36,7 +36,7 @@ const setUpClimbs = data => {
             
             <div
             id="collapse${i}"
-            class="collapse show"
+            class="collapse"
             aria-labelledby="heading${i}"
             data-parent="#accordion"
             >

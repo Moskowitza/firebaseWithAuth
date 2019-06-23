@@ -10,13 +10,12 @@ auth.onAuthStateChanged(user => {
   if (user) {
     console.log(`logged in user: ${JSON.stringify(user)}`);
     // if there is a user, get the climbs
-    setupUI(user);
-    db.collection('climbs')
-      .get()
-      .then(snapshot => {
-        console.log(snapshot.docs);
-        setUpClimbs(snapshot.docs);
-      });
+
+    db.collection('climbs').onSnapshot(snapshot => {
+      console.log(snapshot.docs);
+      setUpClimbs(snapshot.docs);
+      setupUI(user);
+    });
   } else {
     setUpClimbs([]);
     setupUI(user);
