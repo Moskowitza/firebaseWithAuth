@@ -103,7 +103,7 @@
               href="#"
               id="logout"
               class="nav-link modal-trigger"
-              data-target="#modal-logout"
+              data-target="#modal-signup"
               data-toggle="modal"
               >Sign Up</a
             >
@@ -135,7 +135,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id="signup-form">
               <div class="form-group">
                 <label for="signup-email" class="col-form-label"
                   >Singup Email:</label
@@ -160,17 +160,18 @@
                   required
                 />
               </div>
+
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+              </div>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="button" class="btn btn-primary">Sign Up</button>
           </div>
         </div>
       </div>
@@ -198,7 +199,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id="login-form">
               <div class="form-group">
                 <label for="login-email" class="col-form-label"
                   >Singup Email:</label
@@ -223,17 +224,17 @@
                   required
                 />
               </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="button" class="btn btn-primary">Sign Up</button>
           </div>
         </div>
       </div>
@@ -302,12 +303,19 @@
           <div class="modal-body">
             <form id="create-form">
               <div class="form-group">
-                <label for="title" class="col-form-label">Route Name:</label>
-                <input type="text" class="form-control" id="title" required />
+                <label for="routeName" class="col-form-label"
+                  >Route Name:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="routeName"
+                  required
+                />
               </div>
               <div class="form-group">
-                <label for="content" class="col-form-label">Content:</label>
-                <input type="text" class="form-control" id="content" required />
+                <label for="grade" class="col-form-label">Grade:</label>
+                <input type="text" class="form-control" id="grade" required />
               </div>
             </form>
           </div>
@@ -443,29 +451,28 @@
       </div>
     </main>
 
-    <!-- Run After Body Loads -->
-
-    <script
-      defer
-      src="https://www.gstatic.com/firebasejs/5.10.0/firebase-app.js"
-    ></script>
-    <script
-      defer
-      src="https://www.gstatic.com/firebasejs/5.10.0/firebase-auth.js"
-    ></script>
-    <script
-      defer
-      src="https://www.gstatic.com/firebasejs/5.10.0/firebase-firestore.js"
-    ></script>
-    <script
-      defer
-      src="https://www.gstatic.com/firebasejs/5.10.0/firebase-functions.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"
-    ></script>
-    <script src="scripts/auth.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.2/firebase-firestore.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: 'AIzaSyAQX9CcVQx9QSgfZeY6dnuWRCikqsA7owM',
+        authDomain: 'netninjafirebasetut.firebaseapp.com',
+        databaseURL: 'https://netninjafirebasetut.firebaseio.com',
+        projectId: 'netninjafirebasetut',
+        storageBucket: 'netninjafirebasetut.appspot.com',
+        messagingSenderId: '618688326932',
+        appId: '1:618688326932:web:9cc36ab79f7e83c7',
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      // make auth and firestore variables
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+    </script>
     <script src="scripts/index.js"></script>
+    <script src="scripts/auth.js"></script>
   </body>
 </html>
