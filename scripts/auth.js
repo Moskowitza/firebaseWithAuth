@@ -5,6 +5,104 @@ const loginForm = document.querySelector('#login-form');
 const createForm = document.querySelector('#create-form');
 const adminForm = document.querySelector('.admin-actions');
 const resetForm = document.querySelector('#reset-request-form');
+// For saving climbs to your array
+
+let userId = null;
+let savedClimbsArray = [];
+let savedClimbObjs = [];
+// connect to database
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    userId = user.uid;
+    // console.log(`logged in user: ${JSON.stringify(user)}`);
+    // if there is a user, get the climbs
+    user.getIdTokenResult().then(idTokenResult => {
+      // if this is true, set a new property to the user
+      user.admin = idTokenResult.claims.admin;
+      setupUI(user);
+    });
+
+    db.collection('climbs').onSnapshot(
+      snapshot => {
+        setUpClimbs(snapshot.docs);
+      },
+      err => console.log(err.message)
+    );
+    db.collection('usersClimbs')
+      .doc(user.uid)
+      .get()
+      .then(function(doc) {
+        if (doc.exists) {
+          console.log('Document data:', doc.data());
+          savedClimbsArray = [...doc.data().savedClimbsArray];
+          getSavedClimbsDeets();
+        } else {
+          // doc.data() will be undefined in this case
+          console.log('No such document!');
+        }
+      })
+      .catch(function(error) {
+        console.log('Error getting document:', error);
+      });
+  } else {
+    setUpClimbs([]);
+    setupUI(user);
+  }
+});
+function getSavedClimbsDeets() {
+  savedClimbObjs = [];
+  savedClimbsArray.forEach(climb =>
+    db
+      .collection('climbs')
+      .doc(climb)
+      .get()
+      .then(function(doc) {
+        const climbObj = {
+          id: climb,
+          routeName: doc.data().routeName,
+          grade: doc.data().grade,
+        };
+        savedClimbObjs.push(climbObj);
+      })
+      .then(res => {
+        console.log(`getSavedCimb res: ${res}`);
+        displaySavedClimbs(savedClimbObjs);
+      })
+      .catch(err => console.error(err))
+  );
+}
+
+function syncSavedClimbsArray() {
+  db.collection('usersClimbs')
+    .doc(userId)
+    .set({
+      savedClimbsArray,
+    })
+    .then(getSavedClimbsDeets()) // then make a call to get climb details
+    .catch(err => console.error(err));
+}
+// Call this function when save button is clicked
+function saveClimb(climbId) {
+  console.log(climbId.id);
+  const climbuid = climbId.id;
+  // if this climb is not already in the savedClimbs array add it
+  if (!savedClimbsArray.includes(climbuid)) {
+    savedClimbsArray.push(climbuid);
+    console.log(savedClimbsArray);
+    syncSavedClimbsArray();
+  }
+
+  // save the changes to firebase
+}
+function removeClimb(climbId) {
+  const climbuid = climbId.id;
+  console.log(climbuid);
+  // get id of climb and remove it from SavedClimsbArray
+  savedClimbsArray = savedClimbsArray.filter(item => item !== climbuid);
+  // Sync up with firestore and update the page
+  syncSavedClimbsArray();
+}
 
 resetForm.addEventListener('submit', e => {
   e.preventDefault();
@@ -29,29 +127,6 @@ adminForm.addEventListener('submit', e => {
   console.log(adminEmail);
   const addAdminRole = functions.httpsCallable('addAdminRole');
   addAdminRole({ email: adminEmail }).then(res => console.log(res));
-});
-// connect to database
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    // console.log(`logged in user: ${JSON.stringify(user)}`);
-    // if there is a user, get the climbs
-    user.getIdTokenResult().then(idTokenResult => {
-      // if this is true, set a new property to the user
-      user.admin = idTokenResult.claims.admin;
-      setupUI(user);
-    });
-
-    db.collection('climbs').onSnapshot(
-      snapshot => {
-        setUpClimbs(snapshot.docs);
-      },
-      err => console.log(err.message)
-    );
-  } else {
-    setUpClimbs([]);
-    setupUI(user);
-  }
 });
 
 // create form

@@ -1,4 +1,5 @@
 const climbAccordion = document.querySelector('#accordion');
+const userAccordion = document.querySelector('#userAccordion');
 const loggedOutLinks = document.querySelectorAll('.logged-out');
 const loggedInLinks = document.querySelectorAll('.logged-in');
 const accountModalDeets = document.querySelector('.account-details');
@@ -18,6 +19,7 @@ const setupUI = user => {
             <div style="color:pink;">${user.admin ? 'Admin' : ''}</div>`;
         accountModalDeets.innerHTML = html;
       });
+
     loggedInLinks.forEach(link => (link.style.display = 'block'));
     loggedOutLinks.forEach(link => (link.style.display = 'none'));
   } else {
@@ -32,8 +34,9 @@ const setUpClimbs = data => {
   if (data.length) {
     let html = '';
     data.forEach((doc, i) => {
+      console.log(doc.id);
       const climb = doc.data();
-      console.log(`${climb}, ${i}`);
+      console.log(`${JSON.stringify(climb)}, ${i}`);
       const card = `
             <div class="card">
             <div class="card-header" id="heading${i}">
@@ -59,6 +62,7 @@ const setUpClimbs = data => {
             <div class="card-body">
             <p>${climb.routeName}</p>
             <p>${climb.grade}</p>
+            <button id="${doc.id}" type="button" class="btn btn-success" onclick="saveClimb(${doc.id})">Save</button>
             </div>
             </div>
             </div>`;
@@ -68,5 +72,51 @@ const setUpClimbs = data => {
   } else {
     const html = `<h5>login to view routes</h5>`;
     climbAccordion.innerHTML = html;
+  }
+};
+
+const displaySavedClimbs = data => {
+  if (data.length) {
+    let html = '';
+    data.forEach((climb, i) => {
+      // const climb = doc.data();
+      console.log(`${JSON.stringify(climb)}, ${i}`);
+      const card = `
+            <div class="card">
+            <div class="card-header" id="headingSavedClimb${i}">
+            <h5 class="mb-0">
+            <button
+            class="btn btn-link"
+            data-toggle="collapse"
+            data-target="#collapseSavedClimb${i}"
+            aria-expanded="true"
+            aria-controls="collapse${i}"
+            >
+            ${climb.routeName}
+            </button>
+            </h5>
+            </div>
+            
+            <div
+            id="collapseSavedClimb${i}"
+            class="collapse"
+            aria-labelledby="headingSavedClimb${i}"
+            data-parent="#accordion"
+            >
+            <div class="card-body">
+            <p>${climb.routeName}</p>
+            <p> Grade: ${climb.grade}</p>
+            </div>
+            <button id="${climb.id}" class="btn btn-danger" type="button" onclick="removeClimb(${
+        climb.id
+      })">Remove</button>
+            </div>
+            </div>`;
+      html += card;
+    });
+    userAccordion.innerHTML = html;
+  } else {
+    const html = `<h5>No Saved Routes</h5>`;
+    userAccordion.innerHTML = html;
   }
 };
