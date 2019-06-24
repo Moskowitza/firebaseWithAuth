@@ -62,7 +62,7 @@ const setUpClimbs = data => {
             <div class="card-body">
             <p>${climb.routeName}</p>
             <p>${climb.grade}</p>
-            <button id="${doc.id}" type="button" class="btn btn-success" onclick="saveClimb(${doc.id})">Save</button>
+            <button id="${doc.id}" type="button" class="btn btn-success" onclick="saveClimb('${doc.id}')">Save</button>
             </div>
             </div>
             </div>`;
@@ -78,22 +78,22 @@ const setUpClimbs = data => {
 const displaySavedClimbs = data => {
   if (data.length) {
     let html = '';
-    data.forEach((climb, i) => {
-      // const climb = doc.data();
-      console.log(`${JSON.stringify(climb)}, ${i}`);
+    data.forEach((doc, i) => {
+      const climb = doc;
+      console.log(`in displaySavedClimbs : ${JSON.stringify(climb)}, ${i}`);
       const card = `
             <div class="card">
-            <div class="card-header" id="headingSavedClimb${i}">
-            <h5 class="mb-0">
-            <button
-            class="btn btn-link"
-            data-toggle="collapse"
-            data-target="#collapseSavedClimb${i}"
-            aria-expanded="true"
-            aria-controls="collapse${i}"
-            >
-            ${climb.routeName}
-            </button>
+              <div class="card-header" id="headingSavedClimb${i}">
+              <h5 class="mb-0">
+                <button
+                class="btn btn-link"
+                data-toggle="collapse"
+                data-target="#collapseSavedClimb${i}"
+                aria-expanded="true"
+                aria-controls="collapse${i}"
+                >
+                  ${climb.routeName}
+                </button>
             </h5>
             </div>
             
@@ -103,14 +103,16 @@ const displaySavedClimbs = data => {
             aria-labelledby="headingSavedClimb${i}"
             data-parent="#accordion"
             >
-            <div class="card-body">
-            <p>${climb.routeName}</p>
-            <p> Grade: ${climb.grade}</p>
-            </div>
-            <button id="${climb.id}" class="btn btn-danger" type="button" onclick="removeClimb(${
-        climb.id
-      })">Remove</button>
-            </div>
+              <div class="card-body">
+              <p>${climb.routeName}</p>
+              <p> Grade: ${climb.grade}</p>
+              </div>
+              <button id="remove-${climb.id}" class="btn btn-danger" 
+                type="button" 
+                onclick="removeClimb('${climb.id}')"
+                >Remove
+                </button>
+              </div>
             </div>`;
       html += card;
     });
