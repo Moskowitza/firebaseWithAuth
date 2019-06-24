@@ -106,12 +106,13 @@ const displaySavedClimbs = data => {
               <div class="card-body">
               <p>${climb.routeName}</p>
               <p> Grade: ${climb.grade}</p>
-              </div>
               <button id="remove-${climb.id}" class="btn btn-danger" 
-                type="button" 
-                onclick="removeClimb('${climb.id}')"
-                >Remove
-                </button>
+              type="button" 
+              onclick="removeClimb('${climb.id}')"
+              >Remove
+              </button>
+              </div>
+
               </div>
             </div>`;
       html += card;
