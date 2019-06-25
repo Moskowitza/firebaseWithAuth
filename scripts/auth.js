@@ -33,9 +33,7 @@ auth.onAuthStateChanged(user => {
     userdb.onSnapshot(
       snapshot => {
         const usersClimbs = snapshot.data().savedClimbsArray;
-        if (usersClimbs) {
-          getSavedClimbsDeets(usersClimbs);
-        }
+        usersClimbs ? getSavedClimbsDeets(usersClimbs) : getSavedClimbsDeets([]);
       },
       err => console.error(err.message)
     );
@@ -48,20 +46,25 @@ auth.onAuthStateChanged(user => {
 // TODO: FIX this to work with array method
 function getSavedClimbsDeets(ticklist) {
   savedClimbObjs = [];
-  ticklist.forEach(climb => {
-    db.collection('climbs')
-      .doc(climb)
-      .get()
-      .then(function(doc) {
-        console.log(doc.data());
-        const { routeName, grade } = doc.data();
-        const climbObj = { id: climb, routeName, grade };
-        savedClimbObjs.push(climbObj);
-        console.log(`savedClimbObjs ${JSON.stringify(savedClimbObjs)}`);
-      })
-      .then(() => displaySavedClimbs(savedClimbObjs))
-      .catch(err => console.error(err));
-  });
+  if (ticklist.length) {
+    ticklist.forEach(climb => {
+      db.collection('climbs')
+        .doc(climb)
+        .get()
+        .then(function(doc) {
+          const { routeName, grade } = doc.data();
+          const climbObj = { id: climb, routeName, grade };
+          savedClimbObjs.push(climbObj);
+        })
+        .then(() => {
+          console.log(`getSavedClimbsDeets, before displaySavedClimbs:${JSON.stringify(savedClimbObjs)} `);
+          displaySavedClimbs(savedClimbObjs);
+        })
+        .catch(err => console.error(err));
+    });
+  } else {
+    displaySavedClimbs([]);
+  }
 }
 
 // Call this function when save button is clicked
@@ -70,7 +73,6 @@ function saveClimb(climbId) {
     savedClimbsArray: firebase.firestore.FieldValue.arrayUnion(climbId),
   });
 }
-
 // save the changes to firebase
 function removeClimb(climbId) {
   userdb.update({
