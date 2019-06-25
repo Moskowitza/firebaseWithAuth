@@ -8,7 +8,6 @@ const resetForm = document.querySelector('#reset-request-form');
 // For saving climbs to your array
 
 const userId = null;
-const savedClimbsArray = [];
 let savedClimbObjs = [];
 // connect to database
 // Set user db string
@@ -16,7 +15,7 @@ let userdb = null;
 
 auth.onAuthStateChanged(user => {
   if (user) {
-    userdb = db.collection('usersClimbs').doc(user.uid);
+    userdb = db.collection('users').doc(user.uid);
     // console.log(`logged in user: ${JSON.stringify(user)}`);
     // if there is a user, get the climbs
     user.getIdTokenResult().then(idTokenResult => {
@@ -33,54 +32,38 @@ auth.onAuthStateChanged(user => {
     );
     userdb.onSnapshot(
       snapshot => {
-        console.log(`snapshot, updated saved climbs ${JSON.stringify(snapshot.data().savedClimbsArray)}`);
         const usersClimbs = snapshot.data().savedClimbsArray;
-        // Todo: get details
-        getSavedClimbsDeets(usersClimbs);
-        // ToDo: pipe them into displaySavedClimbs
+        if (usersClimbs) {
+          getSavedClimbsDeets(usersClimbs);
+        }
       },
       err => console.error(err.message)
     );
   } else {
     setUpClimbs([]);
     setupUI(user);
-    // TODO: fix this Displayed Saved Climbs
-    // displaySavedClimbs([]); // clear out the saved climbs
+    displaySavedClimbs([]);
   }
 });
 // TODO: FIX this to work with array method
 function getSavedClimbsDeets(ticklist) {
   savedClimbObjs = [];
-  ticklist.forEach(climb =>
-    db
-      .collection('climbs')
+  ticklist.forEach(climb => {
+    db.collection('climbs')
       .doc(climb)
       .get()
       .then(function(doc) {
         console.log(doc.data());
         const { routeName, grade } = doc.data();
-        const climbObj = {
-          id: climb,
-          routeName,
-          grade,
-        };
+        const climbObj = { id: climb, routeName, grade };
         savedClimbObjs.push(climbObj);
+        console.log(`savedClimbObjs ${JSON.stringify(savedClimbObjs)}`);
       })
       .then(() => displaySavedClimbs(savedClimbObjs))
-      .catch(err => console.error(err))
-  );
+      .catch(err => console.error(err));
+  });
 }
 
-// function syncSavedClimbsArray() {
-//   // TODO: switch to union method
-//   db.collection('usersClimbs')
-//     .doc(userId)
-//     .set({
-//       savedClimbsArray,
-//     })
-//     .then(getSavedClimbsDeets()) // then make a call to get climb details
-//     .catch(err => console.error(err));
-// }
 // Call this function when save button is clicked
 function saveClimb(climbId) {
   userdb.update({
@@ -89,17 +72,15 @@ function saveClimb(climbId) {
 }
 
 // save the changes to firebase
-
 function removeClimb(climbId) {
   userdb.update({
     savedClimbsArray: firebase.firestore.FieldValue.arrayRemove(climbId),
   });
 }
-
+// Reset Email
 resetForm.addEventListener('submit', e => {
   e.preventDefault();
   const emailAddress = resetForm['reset-request-email'].value;
-  console.log(emailAddress);
   auth
     .sendPasswordResetEmail(emailAddress)
     .then(function() {
@@ -160,7 +141,7 @@ signupForm.addEventListener('submit', e => {
       //  Save the bio
       db.collection('users')
         .doc(res.user.uid)
-        .set({ bio });
+        .set({ bio, savedClimbsArray: [] });
     })
     .then(() => {
       // handle the DOM
@@ -175,16 +156,18 @@ signupForm.addEventListener('submit', e => {
       const errorMessage = error.message;
       // ...
       signupForm.querySelector('.error').innerHTML = errorMessage;
-      console.log(`${errorCode}  ${errorMessage}`);
+      console.error(`${errorCode}  ${errorMessage}`);
     });
 });
 // LOG OUT
 logout.addEventListener('click', e => {
   e.preventDefault();
-  console.log(`signed out`);
-  auth.signOut().then(res => {
-    // console.log(res);
-  });
+  auth
+    .signOut()
+    .then(res => {
+      // console.log(res);
+    })
+    .catch(err => console.error(err));
 });
 // Login
 loginForm.addEventListener('submit', e => {
@@ -194,7 +177,6 @@ loginForm.addEventListener('submit', e => {
   auth
     .signInWithEmailAndPassword(email, password)
     .then(res => {
-      //   console.log(res.user);
       const modal = $('#modal-login');
       modal.modal('hide');
       loginForm.reset();
@@ -202,11 +184,8 @@ loginForm.addEventListener('submit', e => {
     })
     .catch(function(error) {
       // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-      loginForm.querySelector('.error').innerHTML = errorMessage;
-
-      console.error(`${errorCode}  ${errorMessage}`);
+      const { code, message } = error;
+      loginForm.querySelector('.error').innerHTML = message;
+      console.error(`${code}  ${message}`);
     });
 });
